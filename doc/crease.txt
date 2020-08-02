@@ -1,4 +1,4 @@
-*crease.vim*    Statusline like syntax for foldtext.    *crease* *crease.vim*
+Statusline like syntax for foldtext.                    *crease* *crease.vim*
 
 Author: scr1pt0r
 License: MIT License
@@ -15,7 +15,7 @@ CONTENTS                                                *crease-contents*
 ==============================================================================
 1. Introduction                                         *crease-introduction*
 
-The aim of the *crease* plugin is to introduce |statusline| like syntax to the
+The aim of the crease plugin is to introduce |statusline| like syntax to the
 |foldtext| option.
 
 Setting the |foldtext| option to a (non-default) useful value is too arduous a

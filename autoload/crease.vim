@@ -20,10 +20,7 @@ function! crease#foldtext() abort
 endfunction
 
 function! s:parse_foldtext(foldtext) abort
-    let components = map(
-        \ split(a:foldtext, '%=', 1),
-        \ {_, component -> s:parse_component(component)}
-        \ )
+    let components = split(s:parse_items(a:foldtext), '', 1)
 
     if len(components) == 1
         return components[0]
@@ -49,16 +46,16 @@ function! s:parse_foldtext(foldtext) abort
     return foldtext
 endfunction
 
-function! s:parse_component(component) abort
-    let parsed = substitute(
-        \ a:component,
+function! s:parse_items(foldtext) abort
+    let parsed_blocks = substitute(
+        \ a:foldtext,
         \ '\m\C%{\([^{]*\)}',
         \ '\=eval(submatch(1))',
         \ 'g'
         \ )
 
     return substitute(
-        \ parsed,
+        \ parsed_blocks,
         \ '\m\C%\(.\)',
         \ '\=s:expand_item(submatch(1))',
         \ 'g'
@@ -68,6 +65,8 @@ endfunction
 function! s:expand_item(item) abort
     if a:item ==# '%'
         return '%'
+    elseif a:item ==# '='
+        return ''
     elseif a:item ==# 'f'
         return s:fill_char()
     elseif a:item ==# 't'
@@ -103,7 +102,11 @@ function! s:buffer_width() abort
     let sign_width =
         \ &signcolumn == 'yes'
         \ || !empty(sign_getplaced(bufnr(''))[0]['signs'])
-        \ || g:loaded_gitgutter && !empty(GitGutterGetHunks())
+        \ || (
+        \   exists('g:loaded_gitgutter')
+        \   && g:loaded_gitgutter
+        \   && !empty(GitGutterGetHunks())
+        \ )
         \ ? 2 : 0
     return window_width - number_width - fold_width - sign_width
 endfunction

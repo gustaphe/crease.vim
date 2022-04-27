@@ -54,16 +54,22 @@ This plugin is configured through the `g:crease_foldtext` variable. It is a
 dictionary whose keys are the possible foldmethods (and `default`), and whose
 values are the foldtexts for the corresponsing foldmethods.
 
-Items starting with "%" in the foldtexts are expanded:
+Items starting with "%" in the foldtexts are expanded as described by the table
+below. `count` can be added as a number between the "%" and the item.
 
-| Item | Meaning                                                                                                   |
-|:----:|:----------------------------------------------------------------------------------------------------------|
-| %%   | A literal "%".                                                                                            |
-| %=   | Seperation point between alignment sections. Each section will be seperated by an equal number of spaces. |
-| %t   | The text in the first line of the fold, stripped of comments and fold markers.                            |
-| %l   | The number of lines in the fold.                                                                          |
-| %f   | The fold character defined in the fillchars option ("-" by default).                                      |
-| %{   | Evaluate the expression between "%{" and "}" and substitute the result.                                   |
+| Item | Meaning                                                                                                   | Count   |
+|:----:|:----------------------------------------------------------------------------------------------------------| :------ |
+| %%   | A literal "%".                                                                                            | Width   |
+| %=   | Seperation point between alignment sections. Each section will be seperated by an equal number of spaces. | Repeat  |
+| %t   | The text in the first line of the fold, stripped of comments and fold markers.                            | Width   |
+| %l   | The number of lines in the fold.                                                                          | Width   |
+| %f   | The fold character defined in the fillchars option ("-" by default).                                      | Repeat  |
+| %{   | Evaluate the expression between "%{" and "}" and substitute the result.                                   | Ignored |
+
+For the fields where `Count` gives width, this (roughly) corresponds to minimum
+field width in C style printing, where the field will be padded with spaces
+(see `:help fprint`). Where `Count` gives repeat, Adding a count will
+correspond to writing the same field `Count` times in a row.
 
 For more information, run `:help crease`
 
@@ -85,7 +91,7 @@ let g:crease_foldtext = { 'marker': '%=- %t -%=' }
 
 ```vim
 set fillchars=fold:━
-let g:crease_foldtext = { 'default': '%f%f┫ %t%{CreaseChanged()} ┣%=┫ %l lines ┣%f%f' }
+let g:crease_foldtext = { 'default': '%2f┫ %t%{CreaseChanged()} ┣%=┫%2l lines ┣%2f' }
 
 function! CreaseChanged()
     return gitgutter#fold#is_changed() ? ' *' : ''

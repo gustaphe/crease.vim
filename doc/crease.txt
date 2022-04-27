@@ -49,16 +49,20 @@ plugin manager.
         |foldtext| consists of |printf| and |statusline| style '%' items interspersed
         with normal text.
 
-        item  meaning ~
-        %     A literal "%".
-        =     Seperation point between alignment sections. Each section will be
-              seperated by an equal number of spaces.
-        t     The text in the first line of the fold, stripped of comments and
-              fold markers.
-        l     The number of lines in the fold.
-        f     The fold character defined in |fillchars| ("-" by default).
-        {     Evaluate the expression between "%{" and "}" and substitute
+        item  meaning                                                       count ~
+        %     A literal "%".                                                width
+        =     Seperation point between alignment sections. Each section     repeat
+              will be seperated by an equal number of spaces.
+        t     The text in the first line of the fold, stripped of comments  width
+              and fold markers.
+        l     The number of lines in the fold.                              width
+        f     The fold character defined in |fillchars| ("-" by default).   repeat
+        {     Evaluate the expression between "%{" and "}" and substitute   ignored
               the result.
+
+        A count can be given between the "%" and the symbol, like `%4l`, which
+        either gives the minimum width (to be padded with spaces), or a number
+        of times to repeat the command, as indicated in the table.
 
         Note that the %{} items are expanded before the rest of the items,
         meaning another item could be returned from the expression within.
@@ -80,7 +84,7 @@ Using |gitgutter#fold#is_changed()|:
 >
     set fillchars=\-
     let g:crease_foldtext = {
-            \ 'default': '%f%f[ %t%{CreaseModified()} ]%=[ %l lines ]%f%f'
+            \ 'default': '%2f[ %t%{CreaseModified()} ]%=[%4l lines ]%2f'
             \ }
     function! CreaseModified()
         return gitgutter#fold#is_changed() ? ' *' : ''

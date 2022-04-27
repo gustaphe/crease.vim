@@ -46,6 +46,10 @@ function! s:parse_foldtext(foldtext) abort
     return foldtext
 endfunction
 
+function! crease#debug()
+    echo s:parse_items(g:crease_foldtext['default'])
+endfunction
+
 function! s:parse_items(foldtext) abort
     let parsed_blocks = substitute(
         \ a:foldtext,
@@ -56,23 +60,28 @@ function! s:parse_items(foldtext) abort
 
     return substitute(
         \ parsed_blocks,
-        \ '\m\C%\(.\)',
-        \ '\=s:expand_item(submatch(1))',
+        \ '\m\C%\(\d*\)\(.\)',
+        \ '\=s:expand_item(submatch(2), submatch(1))',
         \ 'g'
         \ )
 endfunction
 
-function! s:expand_item(item) abort
+function! s:expand_item(item, num = 1) abort
+    if empty(a:num)
+        let num = 1
+    else
+        let num = a:num
+    endif
     if a:item ==# '%'
-        return '%'
+        return printf('%'.num.'s', '%')
     elseif a:item ==# '='
-        return ''
+        return repeat('', num)
     elseif a:item ==# 'f'
-        return s:fill_char()
+        return repeat(s:fill_char(), num)
     elseif a:item ==# 't'
-        return s:stripped_fold_text()
+        return printf('%'.num.'s', s:stripped_fold_text())
     elseif a:item ==# 'l'
-        return v:foldend - v:foldstart + 1
+        return printf('%'.num.'d', v:foldend - v:foldstart + 1)
     endif
 
     return '%' . a:item
